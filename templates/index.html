@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interaktives Arbeitsblatt - Elektrolyse</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="ws-header">
+      <div class="header-logos">
+        <img src="{{ url_for('static', filename='img/logo-gsm-transparent.png') }}" alt="GSM" class="logo-gsm">
+        <div class="header-text">
+          <h1 class="ws-title">Elektrolyse erforschen</h1>
+          <p class="ws-subtitle">Chemie | Elektrochemie | Beobachten, vergleichen, erklaeren</p>
+        </div>
+        <img src="{{ url_for('static', filename='img/WK_8.png') }}" alt="WK" class="logo-wk">
+      </div>
+    </header>
+
+    <section class="student-strip">
+      <div>
+        <span class="muted">Angemeldet als</span>
+        <strong>{{ student.pseudonym }}</strong>
+      </div>
+      <a class="btn-ghost" href="/logout">Abmelden</a>
+    </section>
+
+    <section class="progress-card">
+      <div class="progress-label">
+        <span>Fortschritt</span>
+        <strong id="progress-text">0/6 Aufgaben</strong>
+      </div>
+      <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+    </section>
+
+    <nav class="tabbar" aria-label="Arbeitsbereiche">
+      <button class="tab-btn active" type="button" data-tab-target="panel-einstieg">Einstieg</button>
+      <button class="tab-btn" type="button" data-tab-target="panel-prinzip">Prinzip</button>
+      <button class="tab-btn" type="button" data-tab-target="panel-teilchen">Teilchen</button>
+      <button class="tab-btn" type="button" data-tab-target="panel-gleichungen">Gleichungen</button>
+      <button class="tab-btn" type="button" data-tab-target="panel-anwendung">Anwendung</button>
+      <button class="tab-btn" type="button" data-tab-target="panel-sicherung">Sicherung</button>
+    </nav>
+
+    <section id="panel-einstieg" class="tab-panel active">
+      <article class="intro-band">
+        <div>
+          <p class="eyebrow">Forscherfrage</p>
+          <h2>Was unterscheidet eine freiwillige Redoxreaktion von einer erzwungenen?</h2>
+          <p>Vergleiche beide Zellen fachlich: Elektronenfluss, Ionenwanderung, Elektrodenreaktionen, Energieumwandlung und Funktion der Spannungsquelle.</p>
+        </div>
+      </article>
+
+      <div class="cell-grid">
+        <article class="cell-lab detailed-galvanic" data-cell="galvanic">
+          <div class="cell-head">
+            <div>
+              <p class="eyebrow">Galvanische Zelle</p>
+              <h3>Daniell-Element: Reaktion liefert Strom</h3>
+            </div>
+          </div>
+          <div class="cell-stage image-stage">
+            <img src="{{ url_for('static', filename='img/Galvanisches_Element.png') }}" alt="Galvanisches Element: Zink gibt Elektronen ab, Kupferionen werden reduziert und Elektrolytionen wandern durch die Salzbruecke.">
+          </div>
+        </article>
+
+        <article class="cell-lab" data-cell="electrolysis">
+          <div class="cell-head">
+            <div>
+              <p class="eyebrow">Elektrolysezelle</p>
+              <h3>Spannung treibt Redoxreaktion</h3>
+            </div>
+          </div>
+          <div class="cell-stage image-stage electrolysis-image-stage">
+            <img src="{{ url_for('static', filename='img/Elektrolyse.png') }}" alt="Elektrolyse von geschmolzenem Zinkiodid mit Gleichspannungsquelle, Kathode, Anode, Kationen- und Anionenwanderung.">
+          </div>
+        </article>
+      </div>
+
+      <article class="task-card" data-task-card="1">
+        <div class="task-head">
+          <span class="task-number">1</span>
+          <div>
+            <h3>Beobachtung und Deutung trennen</h3>
+            <p>Beschreibe beide Zellen erst beobachtend und leite daraus eine fachliche Deutung ab.</p>
+          </div>
+          <select class="niveau-select" aria-label="Niveau waehlen">
+            <option value="A">A Grundniveau</option>
+            <option value="B" selected>B Erklaerung</option>
+            <option value="C">C Transfer</option>
+          </select>
+        </div>
+        <div class="niveau-content" data-n="A">
+          <p>Erstelle eine Vergleichstabelle: galvanische Zelle vs. Elektrolysezelle. Unterscheide Beobachtung und Deutung fuer Elektronenfluss, Ionenwanderung und Elektrodenveraenderungen.</p>
+        </div>
+        <div class="niveau-content active" data-n="B">
+          <p>Formuliere aus dem Vergleich eine begruendete Hypothese: Woran erkennt man, ob eine Redoxreaktion elektrische Energie liefert oder elektrische Energie benoetigt?</p>
+        </div>
+        <div class="niveau-content" data-n="C">
+          <p>Beziehe die Begriffe Oxidationsmittel, Reduktionsmittel und Energieumwandlung ein. Erklaere, warum die Richtung des Elektronenflusses nicht beliebig gewaehlt werden kann.</p>
+        </div>
+        <div class="structured-answer active" data-answer-surface data-show-for="A" aria-label="Tabellarische Antwort">
+          <div class="comparison-table">
+            <div class="comparison-head">Aspekt</div>
+            <div class="comparison-head">Galvanische Zelle</div>
+            <div class="comparison-head">Elektrolysezelle</div>
+
+            <div class="comparison-aspect">Elektronenfluss</div>
+            <div class="comparison-cell" data-aspect="Elektronenfluss" data-system="Galvanische Zelle">
+              <label>Beobachtung<textarea rows="2" data-field="Beobachtung"></textarea></label>
+              <label>Deutung<textarea rows="2" data-field="Deutung"></textarea></label>
+            </div>
+            <div class="comparison-cell" data-aspect="Elektronenfluss" data-system="Elektrolysezelle">
+              <label>Beobachtung<textarea rows="2" data-field="Beobachtung"></textarea></label>
+              <label>Deutung<textarea rows="2" data-field="Deutung"></textarea></label>
+            </div>
+
+            <div class="comparison-aspect">Ionenwanderung</div>
+            <div class="comparison-cell" data-aspect="Ionenwanderung" data-system="Galvanische Zelle">
+              <label>Beobachtung<textarea rows="2" data-field="Beobachtung"></textarea></label>
+              <label>Deutung<textarea rows="2" data-field="Deutung"></textarea></label>
+            </div>
+            <div class="comparison-cell" data-aspect="Ionenwanderung" data-system="Elektrolysezelle">
+              <label>Beobachtung<textarea rows="2" data-field="Beobachtung"></textarea></label>
+              <label>Deutung<textarea rows="2" data-field="Deutung"></textarea></label>
+            </div>
+
+            <div class="comparison-aspect">Elektrodenveraenderung</div>
+            <div class="comparison-cell" data-aspect="Elektrodenveraenderung" data-system="Galvanische Zelle">
+              <label>Beobachtung<textarea rows="2" data-field="Beobachtung"></textarea></label>
+              <label>Deutung<textarea rows="2" data-field="Deutung"></textarea></label>
+            </div>
+            <div class="comparison-cell" data-aspect="Elektrodenveraenderung" data-system="Elektrolysezelle">
+              <label>Beobachtung<textarea rows="2" data-field="Beobachtung"></textarea></label>
+              <label>Deutung<textarea rows="2" data-field="Deutung"></textarea></label>
+            </div>
+          </div>
+        </div>
+        <textarea class="answer-input" data-answer-surface data-show-for="B,C" rows="6" placeholder="Beobachtung, Deutung und begruendete Hypothese..."></textarea>
+        <div class="task-actions">
+          <button class="btn-primary save-answer" type="button">Antwort speichern</button>
+          <button class="btn-outline check-answer" type="button">KI-Feedback zur Antwort</button>
+        </div>
+        <div class="feedback-box" aria-live="polite"></div>
+      </article>
+    </section>
+
+    <section id="panel-prinzip" class="tab-panel">
+      <article class="info-band">
+        <h2>Vom Beobachten zum Prinzip</h2>
+        <p>Bei der Elektrolyse liefert eine aeussere Spannung elektrische Energie: Sie drueckt Elektronen zur Kathode und entzieht sie der Anode. So kann eine in dieser Richtung nicht freiwillige Redoxreaktion ablaufen.</p>
+      </article>
+      <article class="task-card" data-task-card="2">
+        <div class="task-head">
+          <span class="task-number">2</span>
+          <div>
+            <h3>Grundprinzip erschliessen</h3>
+            <p>Entwickle aus der passenden Ursache-Wirkungs-Kette ein fachliches Modell der Elektrolyse.</p>
+          </div>
+          <select class="niveau-select" aria-label="Niveau waehlen">
+            <option value="A">A Grundniveau</option>
+            <option value="B" selected>B Erklaerung</option>
+            <option value="C">C Transfer</option>
+          </select>
+        </div>
+        <div class="tap-options" data-choice-group="principle">
+          <button type="button" data-correct="false">Elektrolyt erzeugt von allein Elektronen, dadurch entsteht Strom.</button>
+          <button type="button" data-correct="true">Spannungsquelle erzeugt ein elektrisches Feld, treibt den Elektronenfluss im aeusseren Leiter an und ermoeglicht Elektrodenreaktionen.</button>
+          <button type="button" data-correct="false">Salzbruecke zwingt Elektronen durch die Loesung, dadurch entsteht Gas.</button>
+        </div>
+        <div class="niveau-content" data-n="A">
+          <p>Begruende die richtige Kette mit den Begriffen Ladungstransport, Elektrolyt, Elektrode, Oxidation und Reduktion.</p>
+        </div>
+        <div class="niveau-content active" data-n="B">
+          <p>Erklaere, warum Elektronen im aeusseren Leiter und Ionen im Elektrolyten fuer einen geschlossenen Stromkreis zusammenwirken muessen.</p>
+        </div>
+        <div class="niveau-content" data-n="C">
+          <p>Vergleiche Elektrolyse und galvanische Zelle mithilfe der Reaktionsrichtung: Welche Rolle spielen Spannung, Freiwilligkeit und Umkehrbarkeit der Redoxreaktion?</p>
+        </div>
+        <textarea class="answer-input" rows="6" placeholder="Fachliches Modell der Elektrolyse..."></textarea>
+        <div class="task-actions">
+          <button class="btn-primary save-answer" type="button">Antwort speichern</button>
+          <button class="btn-outline check-answer" type="button">KI-Feedback zur Antwort</button>
+        </div>
+        <div class="feedback-box" aria-live="polite"></div>
+      </article>
+    </section>
+
+    <section id="panel-teilchen" class="tab-panel">
+      <article class="info-band">
+        <h2>Ionen, Pole und Elektroden</h2>
+        <p>Bei der Elektrolyse wandern Kationen im elektrischen Feld zur Kathode, Anionen zur Anode. Die Elektrodennamen beziehen sich auf Reduktion und Oxidation, nicht dauerhaft auf Plus und Minus.</p>
+      </article>
+      <article class="task-card" data-task-card="3">
+        <div class="task-head">
+          <span class="task-number">3</span>
+          <div>
+            <h3>Teilchenwege begruenden</h3>
+            <p>Nutze die Tabelle als Startpunkt und erklaere die Teilchenwege auf Teilchenebene.</p>
+          </div>
+          <select class="niveau-select" aria-label="Niveau waehlen">
+            <option value="A">A Grundniveau</option>
+            <option value="B" selected>B Erklaerung</option>
+            <option value="C">C Transfer</option>
+          </select>
+        </div>
+        <div class="concept-grid">
+          <span>Kation (+)</span><span>wandert zur</span><strong>Kathode (bei Elektrolyse: -)</strong>
+          <span>Anion (-)</span><span>wandert zur</span><strong>Anode (bei Elektrolyse: +)</strong>
+          <span>Kathode</span><span>Ort der</span><strong>Reduktion</strong>
+          <span>Anode</span><span>Ort der</span><strong>Oxidation</strong>
+        </div>
+        <div class="niveau-content" data-n="A">
+          <p>Erklaere die Wanderung von Kationen und Anionen im elektrischen Feld. Verwende dabei Kathode, Anode, Reduktion und Oxidation korrekt.</p>
+        </div>
+        <div class="niveau-content active" data-n="B">
+          <p>Begruende, warum Ionenwanderung und Elektronenuebertragung getrennte, aber gekoppelte Vorgange sind. Erklaere dabei, warum Elektronen nicht durch den Elektrolyten fliessen.</p>
+        </div>
+        <div class="niveau-content" data-n="C">
+          <p>Vergleiche die Polung der Elektroden bei Elektrolysezelle und galvanischer Zelle. Leite daraus ab, warum Anode stets Oxidation und Kathode stets Reduktion bedeutet.</p>
+        </div>
+        <textarea class="answer-input" rows="6" placeholder="Begruendung der Teilchenwege auf Teilchenebene..."></textarea>
+        <div class="task-actions">
+          <button class="btn-primary save-answer" type="button">Antwort speichern</button>
+          <button class="btn-outline check-answer" type="button">KI-Feedback zur Antwort</button>
+        </div>
+        <div class="feedback-box" aria-live="polite"></div>
+      </article>
+    </section>
+
+    <section id="panel-gleichungen" class="tab-panel">
+      <article class="info-band">
+        <h2>Halbreaktionen lesen</h2>
+        <p>Eine Elektrolyse laesst sich ueber Halbreaktionen, Elektronenbilanz und Konkurrenzreaktionen an den Elektroden begruenden.</p>
+      </article>
+      <article class="task-card" data-task-card="4">
+        <div class="task-head">
+          <span class="task-number">4</span>
+          <div>
+            <h3>Beispiel: konzentrierte Kupferchlorid-Loesung</h3>
+            <p>Analysiere die Elektrodenreaktionen an inerten Elektroden und bewerte die Gesamtreaktion.</p>
+          </div>
+          <select class="niveau-select" aria-label="Niveau waehlen">
+            <option value="A">A Grundniveau</option>
+            <option value="B" selected>B Erklaerung</option>
+            <option value="C">C Transfer</option>
+          </select>
+        </div>
+        <div class="equation-box">
+          <p><strong>Kathode:</strong> Cu<sup>2+</sup>(aq) + 2 e<sup>-</sup> -> Cu(s)</p>
+          <p><strong>Anode:</strong> 2 Cl<sup>-</sup>(aq) -> Cl<sub>2</sub>(g) + 2 e<sup>-</sup></p>
+          <p><strong>Gesamt:</strong> Cu<sup>2+</sup>(aq) + 2 Cl<sup>-</sup>(aq) -> Cu(s) + Cl<sub>2</sub>(g)</p>
+          <p><strong>Hinweis:</strong> In waessriger Loesung koennen Wasser/Hydroxid-Ionen konkurrieren; Konzentration, Elektrodenmaterial und Ueberspannung beeinflussen das Produkt.</p>
+        </div>
+        <div class="niveau-content" data-n="A">
+          <p>Ordne jede Halbreaktion begruendet Oxidation oder Reduktion zu. Benenne Oxidationsmittel, Reduktionsmittel und die Richtung des Elektronentransfers.</p>
+        </div>
+        <div class="niveau-content active" data-n="B">
+          <p>Leite die Gesamtgleichung aus den Halbreaktionen her. Zeige die Elektronenbilanz und erklaere, warum die Reaktion ohne Spannungsquelle nicht freiwillig in dieser Richtung ablaeuft.</p>
+        </div>
+        <div class="niveau-content" data-n="C">
+          <p>Diskutiere moegliche Konkurrenzreaktionen in waessriger Loesung. Begruende, unter welchen Bedingungen eher Chlor, Sauerstoff oder andere Produkte an der Anode entstehen koennen.</p>
+        </div>
+        <textarea class="answer-input" rows="6" placeholder="Analyse der Halbreaktionen, Elektronenbilanz und Bedingungen..."></textarea>
+        <div class="task-actions">
+          <button class="btn-primary save-answer" type="button">Antwort speichern</button>
+          <button class="btn-outline check-answer" type="button">KI-Feedback zur Antwort</button>
+        </div>
+        <div class="feedback-box" aria-live="polite"></div>
+      </article>
+    </section>
+
+    <section id="panel-anwendung" class="tab-panel">
+      <article class="info-band">
+        <h2>Elektrolyse im Alltag</h2>
+        <p>Technische Elektrolysen werden eingesetzt, obwohl sie Energie verbrauchen, weil sie Stoffe, Reinheiten oder Beschichtungen ermoeglichen, die anders kaum erreichbar sind.</p>
+      </article>
+      <article class="task-card" data-task-card="5">
+        <div class="task-head">
+          <span class="task-number">5</span>
+          <div>
+            <h3>Anwendungsbeispiel erklaeren</h3>
+            <p>Waehle eine technische Anwendung und erklaere sie mit Elektrodenreaktionen, Zweck und energetischer Bewertung.</p>
+          </div>
+          <select class="niveau-select" aria-label="Niveau waehlen">
+            <option value="A">A Grundniveau</option>
+            <option value="B" selected>B Erklaerung</option>
+            <option value="C">C Transfer</option>
+          </select>
+        </div>
+        <div class="application-grid">
+          <button type="button" class="app-chip">Aluminiumgewinnung</button>
+          <button type="button" class="app-chip">Galvanisieren</button>
+          <button type="button" class="app-chip">Wasserstoffherstellung</button>
+          <button type="button" class="app-chip">Kupferraffination</button>
+        </div>
+        <div class="niveau-content" data-n="A">
+          <p>Beschreibe fuer ein Beispiel Elektrolyt, Elektroden, Produkt und Zweck. Ordne mindestens eine Elektrodenreaktion als Oxidation oder Reduktion ein.</p>
+        </div>
+        <div class="niveau-content active" data-n="B">
+          <p>Erklaere dein Beispiel als zusammenhaengenden Prozess: Ausgangsstoff, Ionenwanderung, Halbreaktionen, Gesamtreaktion, technischer Nutzen.</p>
+        </div>
+        <div class="niveau-content" data-n="C">
+          <p>Bewerte dein Beispiel fachlich: Energieaufwand, Produktwert, Reinheit/Ausbeute, moegliche Nebenreaktionen und ein oekologischer oder wirtschaftlicher Zielkonflikt.</p>
+        </div>
+        <textarea class="answer-input" rows="6" placeholder="Technische Analyse mit Halbreaktionen, Nutzen und Bewertung..."></textarea>
+        <div class="task-actions">
+          <button class="btn-primary save-answer" type="button">Antwort speichern</button>
+          <button class="btn-outline check-answer" type="button">KI-Feedback zur Antwort</button>
+        </div>
+        <div class="feedback-box" aria-live="polite"></div>
+      </article>
+    </section>
+
+    <section id="panel-sicherung" class="tab-panel">
+      <article class="task-card" data-task-card="6">
+        <div class="task-head">
+          <span class="task-number">6</span>
+          <div>
+            <h3>Forscherfazit</h3>
+            <p>Formuliere ein belastbares Oberstufenmodell der Elektrolyse.</p>
+          </div>
+          <select class="niveau-select" aria-label="Niveau waehlen">
+            <option value="A">A Grundniveau</option>
+            <option value="B" selected>B Erklaerung</option>
+            <option value="C">C Transfer</option>
+          </select>
+        </div>
+        <div class="niveau-content" data-n="A">
+          <p>Formuliere ein strukturiertes Grundmodell mit Spannungsquelle, Elektrolyt, Ionenwanderung, Kathodenreaktion, Anodenreaktion und Gesamtreaktion.</p>
+        </div>
+        <div class="niveau-content active" data-n="B">
+          <p>Erklaere zusammenhaengend, wie elektrische Energie eine nicht freiwillige Redoxreaktion ermoeglicht. Beziehe Elektronenbilanz, Ladungsausgleich und Energieumwandlung ein.</p>
+        </div>
+        <div class="niveau-content" data-n="C">
+          <p>Entwickle ein Vergleichsmodell fuer galvanische Zelle und Elektrolysezelle. Nutze Reaktionsrichtung, Elektrodenpolung, Freiwilligkeit, Spannung und moegliche technische Grenzen.</p>
+        </div>
+        <textarea class="answer-input" rows="8" placeholder="Oberstufen-Fazit mit Modell, Vergleich und Begruendung..."></textarea>
+        <div class="task-actions">
+          <button class="btn-primary save-answer" type="button">Antwort speichern</button>
+          <button class="btn-outline check-answer" type="button">KI-Feedback zur Antwort</button>
+        </div>
+        <div class="feedback-box" aria-live="polite"></div>
+      </article>
+    </section>
+  </main>
+
+  <aside class="chat-widget" id="chat-widget">
+    <button class="chat-toggle" id="chat-toggle" type="button">
+      <img src="{{ url_for('static', filename='img/gsm_avatar.png') }}" alt="">
+      <span>KI-Tutor</span>
+    </button>
+    <section class="chat-panel" id="chat-panel" aria-label="KI-Tutor Chat">
+      <header>
+        <strong>KI-Tutor</strong>
+        <button type="button" id="chat-close" aria-label="Chat schliessen">x</button>
+      </header>
+      <div class="chat-status" id="chat-status">KI-Hilfe ist noch nicht freigegeben.</div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-request">
+        <input id="ki-reason" placeholder="Warum brauchst du Hilfe?">
+        <button class="btn-accent" id="request-ki" type="button">Freigabe anfragen</button>
+      </div>
+      <form class="chat-form" id="chat-form">
+        <input id="chat-input" placeholder="Frage zur Elektrolyse stellen..." disabled>
+        <button class="btn-primary" type="submit" disabled>Senden</button>
+      </form>
+    </section>
+  </aside>
+
+  <script>
+    window.APP_CONFIG = {
+      studentId: "{{ student.id }}",
+      studentName: "{{ student.pseudonym }}",
+      totalTasks: 6
+    };
+  </script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

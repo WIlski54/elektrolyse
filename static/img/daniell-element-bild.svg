@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 360" role="img" aria-labelledby="title desc">
+  <title id="title">Daniell-Element als galvanische Zelle</title>
+  <desc id="desc">Vergleich des Daniell-Elements zu Beginn und nach laengerem Betrieb mit Zinkaufloesung, Kupferabscheidung und Ionenwanderung.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#111827"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#7c3aed"/>
+    </marker>
+    <linearGradient id="cu" x1="0" x2="1">
+      <stop offset="0" stop-color="#f2b66b"/>
+      <stop offset=".6" stop-color="#d98529"/>
+      <stop offset="1" stop-color="#a94d12"/>
+    </linearGradient>
+    <linearGradient id="zn" x1="0" x2="1">
+      <stop offset="0" stop-color="#f8fafc"/>
+      <stop offset=".5" stop-color="#cbd5e1"/>
+      <stop offset="1" stop-color="#94a3b8"/>
+    </linearGradient>
+    <style>
+      .wire{fill:none;stroke:#3b261b;stroke-width:3}
+      .glass{fill:#ffffff;stroke:#2f2f2f;stroke-width:2}
+      .solution{fill:#6fd3e8;opacity:.55}
+      .wall{stroke:#64748b;stroke-width:3;stroke-dasharray:3 4}
+      .label{font:700 22px Arial,sans-serif;fill:#111827}
+      .small{font:700 17px Arial,sans-serif;fill:#111827}
+      .ion{font:700 18px Arial,sans-serif;fill:#111827}
+      .charge-plus{font:700 24px Arial,sans-serif;fill:#ec4899}
+      .charge-minus{font:700 24px Arial,sans-serif;fill:#38bdf8}
+      .electron{font:700 18px Arial,sans-serif;fill:#111827}
+      .meter{fill:#fff;stroke:#111827;stroke-width:2}
+    </style>
+  </defs>
+
+  <g transform="translate(10 25)">
+    <path class="wire" d="M28 84 V25 H360 V84"/>
+    <circle class="meter" cx="194" cy="25" r="20"/>
+    <path d="M184 35 L204 15" stroke="#111827" stroke-width="3"/>
+    <text x="54" y="63" class="charge-minus">⊖</text>
+    <text x="350" y="63" class="charge-plus">⊕</text>
+    <rect x="28" y="84" width="154" height="220" class="glass"/>
+    <rect x="206" y="84" width="154" height="220" class="glass"/>
+    <rect x="32" y="166" width="146" height="134" class="solution"/>
+    <rect x="210" y="166" width="146" height="134" class="solution"/>
+    <line x1="194" y1="122" x2="194" y2="304" class="wall"/>
+    <rect x="58" y="112" width="36" height="172" fill="url(#zn)" stroke="#334155" stroke-width="2"/>
+    <rect x="278" y="112" width="36" height="172" fill="url(#cu)" stroke="#9a3412" stroke-width="2"/>
+    <text x="60" y="181" class="electron">e⁻</text>
+    <path d="M78 246 V201" stroke="#111827" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="61" y="222" class="label">Zn</text>
+    <text x="58" y="250" class="small">(s)</text>
+    <text x="113" y="195" class="label">Zn²⁺</text>
+    <text x="119" y="220" class="small">(aq)</text>
+    <text x="117" y="268" class="ion">Zn²⁺</text>
+    <path d="M136 260 H190" stroke="#111827" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="249" y="195" class="label">Cu²⁺</text>
+    <text x="260" y="220" class="small">(aq)</text>
+    <text x="303" y="180" class="electron">+ e⁻</text>
+    <path d="M297 200 V244" stroke="#111827" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="286" y="266" class="label">Cu</text>
+    <text x="286" y="292" class="small">(s)</text>
+    <text x="166" y="295" class="ion">SO₄²⁻(aq)</text>
+    <path d="M209 276 H150" stroke="#7c3aed" stroke-width="3" marker-end="url(#arrow-purple)"/>
+  </g>
+
+  <g transform="translate(394 0)">
+    <text x="16" y="166" class="label">nach längerem</text>
+    <text x="56" y="194" class="label">Betrieb</text>
+    <text x="64" y="222" class="label">der Zelle</text>
+    <path d="M146 184 H216" stroke="#111827" stroke-width="3" marker-end="url(#arrow)"/>
+  </g>
+
+  <g transform="translate(540 25)">
+    <path class="wire" d="M28 84 V25 H360 V84"/>
+    <circle class="meter" cx="194" cy="25" r="20"/>
+    <path d="M184 35 L204 15" stroke="#111827" stroke-width="3"/>
+    <text x="54" y="63" class="charge-minus">⊖</text>
+    <text x="350" y="63" class="charge-plus">⊕</text>
+    <rect x="28" y="84" width="154" height="220" class="glass"/>
+    <rect x="206" y="84" width="154" height="220" class="glass"/>
+    <rect x="32" y="166" width="146" height="134" class="solution"/>
+    <rect x="210" y="166" width="146" height="134" class="solution"/>
+    <line x1="194" y1="122" x2="194" y2="304" class="wall"/>
+    <path d="M70 112 C58 148 78 174 62 214 C52 244 69 266 58 284 L93 284 C88 252 101 226 91 201 C80 172 98 143 86 112 Z" fill="url(#zn)" stroke="#334155" stroke-width="2"/>
+    <path d="M275 105 C268 140 276 176 265 207 C254 238 274 256 266 292 L325 292 C316 260 337 237 326 205 C314 169 326 136 316 105 Z" fill="url(#cu)" stroke="#9a3412" stroke-width="2"/>
+    <text x="58" y="178" class="electron">e⁻</text>
+    <path d="M79 242 V197" stroke="#111827" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="58" y="222" class="label">Zn</text>
+    <text x="58" y="248" class="small">(s)</text>
+    <text x="116" y="194" class="label">Zn²⁺</text>
+    <text x="154" y="194" class="small">(aq)</text>
+    <text x="132" y="262" class="ion">Zn²⁺</text>
+    <path d="M154 252 H196" stroke="#111827" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="214" y="195" class="label">Cu²⁺</text>
+    <text x="252" y="195" class="small">(aq)</text>
+    <text x="303" y="178" class="electron">+ e⁻</text>
+    <path d="M302 200 V242" stroke="#111827" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="286" y="265" class="label">Cu</text>
+    <text x="286" y="291" class="small">(s)</text>
+    <text x="166" y="295" class="ion">SO₄²⁻(aq)</text>
+    <path d="M209 276 H150" stroke="#7c3aed" stroke-width="3" marker-end="url(#arrow-purple)"/>
+  </g>
+</svg>

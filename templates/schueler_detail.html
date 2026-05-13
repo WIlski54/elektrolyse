@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Details - {{ student.pseudonym }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="ws-header">
+      <div class="header-logos">
+        <img src="{{ url_for('static', filename='img/logo-gsm-transparent.png') }}" alt="GSM" class="logo-gsm">
+        <div class="header-text">
+          <h1 class="ws-title">{{ student.pseudonym }} - Antwortprotokoll</h1>
+          <p class="ws-subtitle">{{ student.klasse }} | Elektrolyse</p>
+        </div>
+        <a class="btn-ghost" href="/dashboard">Dashboard</a>
+      </div>
+    </header>
+
+    <section class="teacher-panel">
+      <h2>KI-Anfragen</h2>
+      <div class="request-list">
+        {% for r in requests %}
+        <article class="request-item">
+          <strong>#{{ r.id }} - {{ r.status }}</strong>
+          <p>{{ r.grund }}</p>
+          {% if r.status == 'offen' %}
+          <div class="log-actions">
+            <button class="btn-small" type="button" data-ki-id="{{ r.id }}" data-ki-decision="approve">Freigeben</button>
+            <button class="btn-small outline" type="button" data-ki-id="{{ r.id }}" data-ki-decision="deny">Ablehnen</button>
+          </div>
+          {% endif %}
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="teacher-panel">
+      <h2>KI-Chat</h2>
+      <div id="chat-list" class="answer-list">
+        {% for c in chats %}
+        <article class="answer-item">
+          <span>{{ c.created_at }} | {{ 'Schueler' if c.role == 'user' else 'KI-Tutor' }}</span>
+          <p>{{ c.message }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="teacher-panel">
+      <h2>Antworten</h2>
+      <div id="answer-list" class="answer-list">
+        {% for a in answers %}
+        <article class="answer-item">
+          <span>Aufgabe {{ a.aufgabe_nr }} | Niveau {{ a.niveau }} | {{ a.created_at }}</span>
+          <p>{{ a.antwort }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+  <script>
+    const watchedSid = "{{ student.id }}";
+    const teacherActionToken = {{ teacher_action_token|tojson }};
+
+    async function decideKi(id, decision) {
+      const res = await fetch(`/api/ki-anfrage/${id}/${decision}`, {
+        method: 'POST',
+        headers: {'X-Teacher-Token': teacherActionToken}
+      });
+      return res.ok;
+    }
+
+    document.addEventListener('click', async event => {
+      const button = event.target.closest('[data-ki-id][data-ki-decision]');
+      if (!button) return;
+      button.disabled = true;
+      button.textContent = 'Bitte warten...';
+      const ok = await decideKi(button.dataset.kiId, button.dataset.kiDecision);
+      if (ok) {
+        const actions = button.closest('.log-actions');
+        if (actions) actions.innerHTML = `<span class="status-note">${button.dataset.kiDecision === 'approve' ? 'Freigegeben' : 'Abgelehnt'}</span>`;
+      } else {
+        button.disabled = false;
+        button.textContent = button.dataset.kiDecision === 'approve' ? 'Freigeben' : 'Ablehnen';
+      }
+    });
+
+    if (window.io) {
+      const socket = io();
+      socket.emit('watch_student', {sid: watchedSid});
+      socket.on('student_answer', data => {
+        if (data.student.id !== watchedSid) return;
+        const list = document.getElementById('answer-list');
+        const item = document.createElement('article');
+        item.className = 'answer-item';
+        item.innerHTML = `<span>Aufgabe ${data.task} | Niveau ${data.niveau} | live</span><p>${data.answer.replaceAll('<', '&lt;')}</p>`;
+        list.prepend(item);
+      });
+      socket.on('ki_chat_message', data => {
+        if (data.student.id !== watchedSid) return;
+        const list = document.getElementById('chat-list');
+        const user = document.createElement('article');
+        user.className = 'answer-item';
+        user.innerHTML = `<span>live | Schueler</span><p>${data.user_message.replaceAll('<', '&lt;')}</p>`;
+        const assistant = document.createElement('article');
+        assistant.className = 'answer-item';
+        assistant.innerHTML = `<span>live | KI-Tutor</span><p>${data.assistant_message.replaceAll('<', '&lt;')}</p>`;
+        list.prepend(assistant);
+        list.prepend(user);
+      });
+      socket.on('classroom_reset', () => {
+        window.location.href = '/dashboard';
+      });
+    }
+  </script>
+</body>
+</html>

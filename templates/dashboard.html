@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lehrer-Dashboard - Elektrolyse</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="ws-header">
+      <div class="header-logos">
+        <img src="{{ url_for('static', filename='img/logo-gsm-transparent.png') }}" alt="GSM" class="logo-gsm">
+        <div class="header-text">
+          <h1 class="ws-title">Lehrer-Dashboard: Elektrolyse</h1>
+          <p class="ws-subtitle">Live-Ueberblick, KI-Freigaben und Antwortprotokoll</p>
+        </div>
+        <form action="/lehrer/logout" method="post">
+          <input type="hidden" name="teacher_token" value="{{ teacher_action_token }}">
+          <button class="btn-ghost" type="submit">Abmelden</button>
+        </form>
+        <img src="{{ url_for('static', filename='img/WK_8.png') }}" alt="WK" class="logo-wk">
+      </div>
+    </header>
+
+    <section class="kpi-grid">
+      <article class="kpi-card"><span>Aktive Lernende</span><strong id="kpi-students">{{ students|length }}</strong></article>
+      <article class="kpi-card"><span>Offene KI-Anfragen</span><strong id="kpi-requests">{{ open_requests }}</strong></article>
+      <article class="kpi-card"><span>Tokens heute</span><strong>{{ tokens_today }}</strong></article>
+      <article class="kpi-card"><span>Aufgaben</span><strong>{{ total_tasks }}</strong></article>
+    </section>
+
+    <section class="teacher-panel">
+      <div class="panel-title-row">
+        <h2>Lernende</h2>
+        <button class="btn-danger" id="reset-classroom" type="button">Alle Aktivitaeten loeschen</button>
+      </div>
+      <div class="table-wrap">
+        <table class="teacher-table" id="students-table">
+          <thead>
+            <tr><th>Pseudonym</th><th>Klasse</th><th>Fortschritt</th><th>KI</th><th>Chats</th><th>Letzte Aktivitaet</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for s in students %}
+            <tr data-sid="{{ s.id }}">
+              <td data-cell="name">{{ s.pseudonym }}</td>
+              <td data-cell="class">{{ s.klasse }}</td>
+              <td data-cell="progress">{{ s.erledigt }}/{{ total_tasks }}</td>
+              <td data-cell="ki">{{ s.offene_ki }} offen</td>
+              <td data-cell="chats">{{ s.chat_count }}</td>
+              <td data-cell="seen">{{ s.last_seen }}</td>
+              <td><a class="btn-small" href="/schueler/{{ s.id }}">Details</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="teacher-panel">
+      <h2>Offene KI-Anfragen</h2>
+      <div id="ki-request-list" class="request-list">
+        {% for r in ki_requests %}
+        <article class="request-item" data-request-id="{{ r.id }}">
+          <strong>{{ r.pseudonym }} ({{ r.klasse }})</strong>
+          <p>{{ r.grund }}</p>
+          <div class="log-actions">
+            <button class="btn-small" type="button" data-ki-id="{{ r.id }}" data-ki-decision="approve">Freigeben</button>
+            <button class="btn-small outline" type="button" data-ki-id="{{ r.id }}" data-ki-decision="deny">Ablehnen</button>
+          </div>
+        </article>
+        {% else %}
+        <p class="muted" id="no-ki-requests">Keine offenen KI-Anfragen.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="teacher-panel">
+      <h2>Live-Protokoll</h2>
+      <div id="live-log" class="live-log" aria-live="polite"></div>
+    </section>
+  </main>
+  <script>
+    const log = document.getElementById('live-log');
+    const reqKpi = document.getElementById('kpi-requests');
+    const studentsKpi = document.getElementById('kpi-students');
+    const tableBody = document.querySelector('#students-table tbody');
+    const requestList = document.getElementById('ki-request-list');
+    const totalTasks = {{ total_tasks }};
+    const teacherActionToken = {{ teacher_action_token|tojson }};
+    const handledKiDecisions = new Set();
+
+    function escapeHtml(text) {
+      return String(text ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[char]);
+    }
+
+    function addLog(html) {
+      const item = document.createElement('div');
+      item.className = 'log-item';
+      item.innerHTML = html;
+      log.prepend(item);
+    }
+
+    function studentRow(student) {
+      if (!student) return null;
+      let row = document.querySelector(`tr[data-sid="${student.id}"]`);
+      if (!row) {
+        row = document.createElement('tr');
+        row.dataset.sid = student.id;
+        row.innerHTML = `
+          <td data-cell="name"></td>
+          <td data-cell="class"></td>
+          <td data-cell="progress"></td>
+          <td data-cell="ki"></td>
+          <td data-cell="chats"></td>
+          <td data-cell="seen"></td>
+          <td><a class="btn-small" href="/schueler/${student.id}">Details</a></td>`;
+        tableBody.prepend(row);
+        studentsKpi.textContent = String(document.querySelectorAll('#students-table tbody tr').length);
+      }
+      row.querySelector('[data-cell="name"]').textContent = student.pseudonym;
+      row.querySelector('[data-cell="class"]').textContent = student.klasse;
+      row.querySelector('[data-cell="progress"]').textContent = `${student.erledigt || 0}/${totalTasks}`;
+      row.querySelector('[data-cell="ki"]').textContent = `${student.offene_ki || 0} offen`;
+      row.querySelector('[data-cell="chats"]').textContent = student.chat_count || 0;
+      row.querySelector('[data-cell="seen"]').textContent = student.last_seen || '';
+      return row;
+    }
+
+    function addKiRequestCard(data) {
+      document.getElementById('no-ki-requests')?.remove();
+      if (document.querySelector(`[data-request-id="${data.id}"]`)) return;
+      const card = document.createElement('article');
+      card.className = 'request-item';
+      card.dataset.requestId = data.id;
+      card.innerHTML = `
+        <strong>${escapeHtml(data.student.pseudonym)} (${escapeHtml(data.student.klasse)})</strong>
+        <p>${escapeHtml(data.grund)}</p>
+        <div class="log-actions">
+          <button class="btn-small" type="button" data-ki-id="${data.id}" data-ki-decision="approve">Freigeben</button>
+          <button class="btn-small outline" type="button" data-ki-id="${data.id}" data-ki-decision="deny">Ablehnen</button>
+        </div>`;
+      requestList.prepend(card);
+    }
+
+    function markKiRequestDone(id, decision) {
+      const card = document.querySelector(`[data-request-id="${id}"]`);
+      if (card) {
+        card.querySelector('.log-actions').innerHTML = `<span class="status-note">${decision === 'approve' ? 'Freigegeben' : 'Abgelehnt'}</span>`;
+        setTimeout(() => {
+          card.remove();
+          if (!requestList.querySelector('.request-item')) {
+            requestList.innerHTML = '<p class="muted" id="no-ki-requests">Keine offenen KI-Anfragen.</p>';
+          }
+        }, 900);
+      }
+    }
+
+    async function decideKi(id, decision) {
+      let res;
+      let data = {};
+      try {
+        res = await fetch(`/api/ki-anfrage/${id}/${decision}`, {
+          method: 'POST',
+          headers: {'X-Teacher-Token': teacherActionToken}
+        });
+        data = await res.json().catch(() => ({}));
+      } catch (error) {
+        addLog(`KI-Anfrage ${id}: Verbindung zum Server fehlgeschlagen.`);
+        return false;
+      }
+      if (!res.ok) {
+        addLog(`KI-Anfrage ${id}: Freigabe konnte nicht gespeichert werden.`);
+        return false;
+      }
+      handledKiDecisions.add(String(id));
+      reqKpi.textContent = String(Math.max(0, Number(reqKpi.textContent || 0) - 1));
+      if (data.student) studentRow(data.student);
+      addLog(`KI-Anfrage ${id}: ${decision === 'approve' ? 'freigegeben' : 'abgelehnt'}.`);
+      markKiRequestDone(id, decision);
+      return true;
+    }
+
+    document.addEventListener('click', async event => {
+      const button = event.target.closest('[data-ki-id][data-ki-decision]');
+      if (!button) return;
+      button.disabled = true;
+      button.textContent = 'Bitte warten...';
+      const ok = await decideKi(button.dataset.kiId, button.dataset.kiDecision);
+      const actions = button.closest('.log-actions');
+      if (ok && actions) {
+        actions.innerHTML = `<span class="status-note">${button.dataset.kiDecision === 'approve' ? 'Freigegeben' : 'Abgelehnt'}</span>`;
+      } else {
+        button.disabled = false;
+        button.textContent = button.dataset.kiDecision === 'approve' ? 'Freigeben' : 'Ablehnen';
+      }
+    });
+
+    document.getElementById('reset-classroom').addEventListener('click', async () => {
+      const ok = confirm('Alle Schueler, Antworten, Fortschritte, KI-Anfragen und Chats dieser Sitzung loeschen?');
+      if (!ok) return;
+      const res = await fetch('/api/reset-classroom', {
+        method: 'POST',
+        headers: {'X-Teacher-Token': teacherActionToken}
+      });
+      if (res.ok) addLog('Sitzung wurde zurueckgesetzt.');
+    });
+
+    if (window.io) {
+      const socket = io();
+      socket.on('student_joined', data => {
+        studentRow(data.student);
+        addLog(`<strong>${escapeHtml(data.student.pseudonym)}</strong> hat sich angemeldet.`);
+      });
+
+      socket.on('student_answer', data => {
+        studentRow(data.student);
+        addLog(`<strong>${escapeHtml(data.student.pseudonym)}</strong> hat Aufgabe ${escapeHtml(data.task)} (${escapeHtml(data.niveau)}) gespeichert:<br>${escapeHtml(data.answer)}`);
+      });
+
+      socket.on('ki_request', data => {
+        studentRow(data.student);
+        reqKpi.textContent = String(Number(reqKpi.textContent || 0) + 1);
+        addKiRequestCard(data);
+        addLog(`<strong>KI-Anfrage von ${escapeHtml(data.student.pseudonym)}</strong><br>${escapeHtml(data.grund)}<div class="log-actions"><button class="btn-small" type="button" data-ki-id="${data.id}" data-ki-decision="approve">Freigeben</button><button class="btn-small outline" type="button" data-ki-id="${data.id}" data-ki-decision="deny">Ablehnen</button></div>`);
+      });
+
+      socket.on('ki_request_decided', data => {
+        if (data.student) studentRow(data.student);
+        if (!handledKiDecisions.has(String(data.request_id))) {
+          reqKpi.textContent = String(Math.max(0, Number(reqKpi.textContent || 0) - 1));
+          handledKiDecisions.add(String(data.request_id));
+        }
+        markKiRequestDone(data.request_id, data.status === 'genehmigt' ? 'approve' : 'deny');
+      });
+
+      socket.on('ki_chat_message', data => {
+        studentRow(data.student);
+        addLog(`<strong>KI-Chat von ${escapeHtml(data.student.pseudonym)}</strong><br><em>${escapeHtml(data.user_message)}</em><br>${escapeHtml(data.assistant_message)}`);
+      });
+
+      socket.on('classroom_reset', () => {
+        tableBody.innerHTML = '';
+        log.innerHTML = '';
+        reqKpi.textContent = '0';
+        studentsKpi.textContent = '0';
+        addLog('Alle Schueleraktivitaeten wurden geloescht.');
+      });
+    } else {
+      addLog('Realtime-Verbindung nicht geladen. Freigaben funktionieren trotzdem; fuer neue Anfragen bitte Dashboard neu laden.');
+    }
+  </script>
+</body>
+</html>

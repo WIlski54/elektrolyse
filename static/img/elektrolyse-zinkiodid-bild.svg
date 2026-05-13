@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">Elektrolyse einer Zinkiodid-Loesung</title>
+  <desc id="desc">Schema der Elektrolyse mit Spannungsquelle, Minuspol-Kathode, Pluspol-Anode, Reduktion von Zink-Ionen und Oxidation von Iodid-Ionen.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#111827"/>
+    </marker>
+    <style>
+      .title{font:800 62px Arial,sans-serif;fill:#000}
+      .big{font:400 34px Arial,sans-serif;fill:#000}
+      .bold{font:800 34px Arial,sans-serif;fill:#000}
+      .chem{font:400 31px Arial,sans-serif;fill:#000}
+      .wire{fill:none;stroke:#000;stroke-width:4}
+      .carbon{fill:#888;stroke:#555;stroke-width:2}
+      .water{fill:#87a8dd;opacity:.9}
+      .iodine{fill:#ffbd73;opacity:.75}
+      .arrow{fill:none;stroke:#111827;stroke-width:3;marker-end:url(#arrow)}
+    </style>
+  </defs>
+
+  <text x="600" y="82" class="title">Elektrolyse</text>
+  <text x="935" y="120" class="big">Spannungsquelle</text>
+  <path d="M775 130 L920 104" class="wire"/>
+
+  <path d="M560 160 H730 M758 140 V184 M786 160 H950 V250" class="wire"/>
+  <path d="M560 160 V250" class="wire"/>
+  <line x1="730" y1="140" x2="730" y2="184" stroke="#000" stroke-width="4"/>
+  <line x1="758" y1="130" x2="758" y2="194" stroke="#000" stroke-width="4"/>
+
+  <text x="372" y="230" class="big">Minuspol</text>
+  <text x="382" y="282" class="big">Kathode</text>
+  <text x="570" y="230" class="bold">-</text>
+  <text x="885" y="230" class="bold">+</text>
+  <text x="970" y="240" class="big">Pluspol</text>
+  <text x="980" y="292" class="big">Anode</text>
+
+  <text x="116" y="384" class="big">Elektrolyt:</text>
+  <text x="116" y="436" class="big">Zinkiodid-Lösung</text>
+  <path d="M392 434 L500 470" class="wire"/>
+
+  <path d="M470 430 V720 H1016 V430" fill="none" stroke="#000" stroke-width="8"/>
+  <rect x="480" y="430" width="526" height="290" class="water"/>
+  <path d="M855 430 H1006 V720 H818 Z" class="iodine"/>
+  <rect x="542" y="260" width="66" height="430" class="carbon"/>
+  <rect x="893" y="260" width="66" height="430" class="carbon"/>
+
+  <text x="580" y="340" class="big">C</text>
+  <text x="923" y="340" class="big">C</text>
+  <text x="548" y="520" class="chem">2e⁻</text>
+  <text x="545" y="620" class="chem">Zn</text>
+  <text x="662" y="515" class="chem">Zn²⁺</text>
+  <path d="M575 270 V458" class="arrow"/>
+  <path d="M575 520 C575 480 620 480 650 500" class="arrow"/>
+
+  <text x="813" y="518" class="chem">2 I⁻</text>
+  <text x="906" y="518" class="chem">2e⁻</text>
+  <text x="864" y="650" class="chem">I₂</text>
+  <path d="M925 520 C925 570 885 590 880 640" class="arrow"/>
+  <path d="M925 500 V278" class="arrow"/>
+
+  <text x="62" y="650" class="bold">Reduktion:</text>
+  <text x="62" y="700" class="chem">Zn²⁺(aq) + 2e⁻ ⇌ Zn(s)</text>
+  <text x="1065" y="650" class="bold">Oxidation:</text>
+  <text x="1065" y="700" class="chem">2 I⁻(aq) ⇌ I₂(s) + 2e⁻</text>
+  <text x="380" y="790" class="bold">Redoxreaktion:</text>
+  <text x="640" y="790" class="chem">Zn²⁺(aq) + 2 I⁻(aq) ⇌ Zn(s) + I₂(aq)</text>
+</svg>

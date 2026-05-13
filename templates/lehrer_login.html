@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lehrerbereich - Elektrolyse</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="login-page">
+  <main class="login-shell">
+    <section class="login-card">
+      <img src="{{ url_for('static', filename='img/logo-gsm-transparent.png') }}" alt="GSM" class="login-logo">
+      <p class="eyebrow">Lehrerbereich</p>
+      <h1>Dashboard anmelden</h1>
+      {% if error %}<p class="error-box">{{ error }}</p>{% endif %}
+      <form method="post" class="login-form">
+        <label for="password">Passwort</label>
+        <input id="password" name="password" type="password" required>
+        <button class="btn-primary" type="submit">Einloggen</button>
+      </form>
+      <a href="/" class="teacher-link">Zurueck zum Schuelerlogin</a>
+    </section>
+  </main>
+</body>
+</html>
