@@ -25,7 +25,8 @@ Kathode, Pluspol, Minuspol, Oxidation, Reduktion, Elektronenfluss, Ionenwanderun
 Spannungsquelle, Zersetzung, Redoxreaktion, Halbreaktion, Elektronenbilanz, Oxidationsmittel,
 Reduktionsmittel, Ueberspannung und Konkurrenzreaktion.
 Antworte auf Deutsch, klar, anspruchsvoll und knapp. Wenn Schueler unsicher sind, fuehre sie
-ueber Beobachtung -> Deutung -> Fachbegriff -> begruendetes Modell."""
+ueber Beobachtung -> Deutung -> Fachbegriff -> begruendetes Modell.
+Nutze fuer chemische Gleichungen und Potentiale saubere LaTeX-Schreibweise mit $...$ und fuer Hervorhebungen Markdown."""
 
 KORREKTUR_PROMPT = """Du korrigierst Schuelerantworten zur Elektrolyse auf Oberstufenniveau.
 Bewerte fachlich fair, nenne richtige Begriffe und gib bei Luecken einen anspruchsvollen, hilfreichen Tipp.

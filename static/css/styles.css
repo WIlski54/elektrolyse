@@ -528,6 +528,8 @@ button { cursor: pointer; }
   border-radius: 10px;
   background: #f1f5f9;
 }
+.message strong { font-weight: 800; }
+.message mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
 .message.user { margin-left: auto; background: #dbeafe; }
 .message.assistant { margin-right: auto; background: #fdf2f8; }
 .chat-request, .chat-form {
@@ -537,7 +539,8 @@ button { cursor: pointer; }
   border-top: 1px solid var(--border);
 }
 .chat-form { grid-template-columns: 1fr auto; }
-.chat-request input, .chat-form input {
+.chat-request button { width: 100%; }
+.chat-form input {
   min-height: 44px;
   border: 2px solid var(--border);
   border-radius: 8px;

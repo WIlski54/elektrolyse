@@ -21,6 +21,18 @@ function escapeHtml(text) {
   })[char]);
 }
 
+function renderMessage(text) {
+  return escapeHtml(text)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+function typesetMath(root) {
+  if (window.MathJax?.typesetPromise) {
+    window.MathJax.typesetPromise([root]).catch(() => {});
+  }
+}
+
 function updateProgress() {
   const total = window.APP_CONFIG.totalTasks;
   const done = new Set(Array.from(progress).map(item => item.split(':')[0])).size;
@@ -430,8 +442,9 @@ function addMessage(role, text) {
   const box = qs('#chat-messages');
   const item = document.createElement('div');
   item.className = `message ${role}`;
-  item.textContent = text;
+  item.innerHTML = renderMessage(text);
   box.append(item);
+  typesetMath(item);
   box.scrollTop = box.scrollHeight;
 }
 
@@ -439,8 +452,9 @@ function setChatApproved(requestId) {
   chatState.requestId = requestId || chatState.requestId;
   chatState.approved = true;
   qs('#chat-status').textContent = 'KI-Hilfe ist freigegeben.';
-  qs('#chat-input').disabled = false;
+  qs('#chat-input').placeholder = 'Frage zur Elektrolyse stellen...';
   qs('#chat-form button').disabled = false;
+  qs('#request-ki').disabled = true;
 }
 
 function setupChat() {
@@ -448,8 +462,8 @@ function setupChat() {
   qs('#chat-toggle').addEventListener('click', () => widget.classList.add('open'));
   qs('#chat-close').addEventListener('click', () => widget.classList.remove('open'));
   qs('#request-ki').addEventListener('click', async () => {
-    const reasonInput = qs('#ki-reason');
-    const reason = reasonInput.value.trim() || 'Ich brauche Hilfe bei der Elektrolyse.';
+    const input = qs('#chat-input');
+    const reason = input.value.trim() || 'Ich moechte die KI-Hilfe zur Elektrolyse nutzen.';
     const res = await fetch('/api/ki-anfrage', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -458,8 +472,7 @@ function setupChat() {
     const data = await res.json();
     if (data.ok) {
       chatState.requestId = data.request_id;
-      qs('#chat-status').textContent = 'Anfrage gesendet. Warte auf Freigabe.';
-      reasonInput.value = '';
+      qs('#chat-status').textContent = 'Anfrage gesendet. Nach der Freigabe kannst du deine Frage senden.';
     }
   });
   qs('#chat-form').addEventListener('submit', async event => {

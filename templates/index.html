@@ -7,6 +7,16 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 </head>
 <body>
   <main class="page-shell">
@@ -362,11 +372,10 @@
       <div class="chat-status" id="chat-status">KI-Hilfe ist noch nicht freigegeben.</div>
       <div class="chat-messages" id="chat-messages"></div>
       <div class="chat-request">
-        <input id="ki-reason" placeholder="Warum brauchst du Hilfe?">
         <button class="btn-accent" id="request-ki" type="button">Freigabe anfragen</button>
       </div>
       <form class="chat-form" id="chat-form">
-        <input id="chat-input" placeholder="Frage zur Elektrolyse stellen..." disabled>
+        <input id="chat-input" placeholder="Frage eingeben und Freigabe anfragen...">
         <button class="btn-primary" type="submit" disabled>Senden</button>
       </form>
     </section>
